@@ -2,12 +2,11 @@
 // client does: JSON-RPC POSTs with `MCP-Protocol-Version`, `Accept:
 // application/json, text/event-stream`, a Bearer token and `Accept-Language`.
 // Every exchange is reported to `onCall` so the inspector can record it.
-// Ported from aobrain-vault-alexa/scripts/local/alexa-sim.mjs.
 
 export const DEFAULT_PROTOCOL_VERSION = "2025-11-25";
 export const CLIENT_INFO = {
   name: "alexa-local-inspector",
-  title: "AOBRAIN local inspector (simulated Alexa+ client)",
+  title: "Alexa local inspector (simulated Alexa+ client)",
   version: "0.1.0"
 };
 

@@ -1,7 +1,6 @@
 // Voice rules of the Alexa+ MCP toolkit, applied to one observed turn:
 // at most five options, no identifiers spoken, under 30 s of speech, the
 // 500 ms round-trip budget, and a bare 401 when the account is not linked.
-// Ported from aobrain-vault-alexa/scripts/local/alexa-sim.mjs.
 
 export const DEFAULTS = { maxOptions: 5, maxMs: 500, maxSeconds: 30 };
 /** Speaking rate used to estimate how long an answer takes to say (≈150 wpm). */

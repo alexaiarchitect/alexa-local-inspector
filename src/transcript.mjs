@@ -1,5 +1,4 @@
-// Markdown transcript of a run, same structure as the alexa-sim transcripts in
-// aobrain-vault-alexa/docs/demo/, extended with the recorded link flow and the
+// Markdown transcript of a run: every call, the recorded link flow and the
 // verdict table.
 import { CLIENT_INFO } from "./mcp-client.mjs";
 import { DEFAULTS } from "./voice.mjs";

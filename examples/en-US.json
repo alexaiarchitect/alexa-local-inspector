@@ -1,5 +1,5 @@
 {
-  "$comment": "Scripted Alexa+ conversation for alexa-local-inspector drive (--brain none). Phrases match alexa-addon/markets.json (us). {{prev.x}} / {{<id>.x}} read earlier structured results. Seed data: serve.mjs --stub --seed en-US.",
+  "$comment": "Scripted Alexa+ conversation for alexa-local-inspector drive (--brain none). {{prev.x}} / {{<id>.x}} read earlier structured results.",
   "locale": "en-US",
   "turns": [
     {

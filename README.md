@@ -10,20 +10,19 @@ HTTP — and adds what Amazon's leaves out: a **simulated Alexa+ voice driver**,
 Node 24, no runtime dependencies. Playwright is optional (visual mode only).
 
 ```bash
-# terminal 1 — a server (offline stub of the vault, from the vault repo)
-node scripts/local/serve.mjs --stub --seed en-US
+# terminal 1 — your MCP server (any Streamable HTTP server, here on :8787)
 
 # terminal 2 — the inspector
-node bin/alexa-local-inspector.mjs http://127.0.0.1:8787/mcp --token-file ../amazonappdev2026/aobrain-vault-alexa/.logs/local-token.txt
+node bin/alexa-local-inspector.mjs http://127.0.0.1:8787/mcp --token-file .logs/local-token.txt
 #   proxy    http://127.0.0.1:6277/mcp  →  http://127.0.0.1:8787/mcp
 #   ui       http://localhost:6274/
 
 # one-shot, no UI: play the scripted conversation, write the verdict, exit 0/1
-node bin/alexa-local-inspector.mjs drive http://127.0.0.1:8787/mcp --script examples/en-US.json --token-file ….logs/local-token.txt --no-open
+node bin/alexa-local-inspector.mjs drive http://127.0.0.1:8787/mcp --script examples/en-US.json --token-file .logs/local-token.txt --no-open
 
 # the deployed endpoint, as a real user (Google sign-in in the browser)
-ALEXA_CLIENT_ID=… ALEXA_CLIENT_SECRET=… node bin/alexa-local-inspector.mjs link https://alexa.aobrain.ai/mcp --token-file .logs/user-token.txt
-node bin/alexa-local-inspector.mjs drive https://alexa.aobrain.ai/mcp --script examples/en-US.json --token-file .logs/user-token.txt
+ALEXA_CLIENT_ID=… ALEXA_CLIENT_SECRET=… node bin/alexa-local-inspector.mjs link https://your-addon.example.com/mcp --token-file .logs/user-token.txt
+node bin/alexa-local-inspector.mjs drive https://your-addon.example.com/mcp --script examples/en-US.json --token-file .logs/user-token.txt
 ```
 
 ## What it does like Alexa+

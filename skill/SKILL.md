@@ -9,7 +9,7 @@ The inspector is a localhost proxy in front of the MCP server plus a browser UI.
 
 ## Step 1 — start
 ```
-alexa-local-inspector https://alexa.aobrain.ai/mcp --token-file .logs/user-token.txt        # or http://127.0.0.1:8787/mcp
+alexa-local-inspector https://your-addon.example.com/mcp --token-file .logs/user-token.txt        # or http://127.0.0.1:8787/mcp
 ```
 `GET http://127.0.0.1:6277/health` → `{"status":"ok"}`. The UI opens at http://localhost:6274/.
 

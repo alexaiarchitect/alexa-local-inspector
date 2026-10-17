@@ -1,9 +1,13 @@
 {
-  "name": "@aobrain/alexa-local-inspector",
+  "name": "@alexaiarchitect/alexa-local-inspector",
   "version": "0.1.0",
   "description": "Local inspector for Alexa+ MCP add-ons: localhost proxy + browser UI (the shape of Amazon's @alexa-ai/addon-local-inspector), a simulated Alexa+ voice driver, account linking, and full flow recording.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexaiarchitect/alexa-local-inspector.git"
+  },
   "private": true,
   "bin": {
     "alexa-local-inspector": "bin/alexa-local-inspector.mjs"

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Device frame</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #fff; }
+      iframe { width: 100%; height: 100%; border: 0; }
+      #empty { font: 14px ui-sans-serif, system-ui; color: #666; padding: 16px; }
+    </style>
+  </head>
+  <body>
+    <div id="empty">Loading widget…</div>
+    <iframe id="widget" title="Widget" sandbox="allow-scripts"></iframe>
+    <script>
+      /* Host side of the MCP Apps (io.modelcontextprotocol/ui) postMessage protocol, enough for
+         a widget to initialize, receive its tool result and call tools through the proxy. */
+      (() => {
+        "use strict";
+        const params = new URLSearchParams(location.search);
+        const api = params.get("api");
+        const tool = params.get("tool");
+        const frame = document.getElementById("widget");
+        const empty = document.getElementById("empty");
+        let pendingResult = null;
+        window.addEventListener("message", async (event) => {
+          if (event.source !== frame.contentWindow) return;
+          const message = event.data;
+          if (!message || message.jsonrpc !== "2.0") return;
+          const reply = (body) => frame.contentWindow.postMessage({ jsonrpc: "2.0", ...body }, "*");
+          if (message.method === "ui/initialize") {
+            reply({ id: message.id, result: { protocolVersion: "2026-01-26", hostCapabilities: { serverTools: true }, hostInfo: { name: "alexa-local-inspector", version: "0.1.0" } } });
+            return;
+          }
+          if (message.method === "ui/notifications/initialized") {
+            if (pendingResult) reply({ method: "ui/notifications/tool-result", params: pendingResult });
+            return;
+          }
+          if (message.method === "tools/call" && api) {
+            try {
+              const response = await fetch(`${api}/mcp`, {
+                method: "POST",
+                headers: { "content-type": "application/json", accept: "application/json" },
+                body: JSON.stringify({ jsonrpc: "2.0", id: message.id, method: "tools/call", params: message.params })
+              });
+              const json = await response.json();
+              reply({ id: message.id, result: json.result, error: json.error });
+            } catch (error) {
+              reply({ id: message.id, error: { code: -32000, message: String(error) } });
+            }
+          }
+        });
+        window.inspectorLoadWidget = (html, result) => {
+          pendingResult = result ? { content: result.content, structuredContent: result.structuredContent, isError: result.isError } : null;
+          empty.remove();
+          frame.srcdoc = html;
+        };
+        window.inspectorAudit = () => {
+          const issues = [];
+          const doc = frame.contentDocument;
+          if (!doc) return ["widget document not accessible"];
+          if (doc.documentElement.scrollWidth > doc.documentElement.clientWidth + 1) issues.push("horizontal overflow");
+          const small = [...doc.querySelectorAll("body *")].filter((node) => node.childNodes.length && [...node.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && parseFloat(getComputedStyle(node).fontSize) < 14);
+          if (small.length) issues.push(`${small.length} text nodes under 14px`);
+          const targets = [...doc.querySelectorAll("button, a, input[type=checkbox], [role=button]")].filter((node) => { const r = node.getBoundingClientRect(); return r.width && r.height && (r.width < 44 || r.height < 44); });
+          if (targets.length) issues.push(`${targets.length} tap targets under 44px`);
+          return issues;
+        };
+        if (api && tool && !params.has("inline")) {
+          fetch(`${api}/widget?tool=${encodeURIComponent(tool)}`)
+            .then((r) => (r.ok ? r.text() : Promise.reject(new Error("no widget read yet (run Visual)"))))
+            .then((html) => window.inspectorLoadWidget(html, null))
+            .catch((error) => { empty.textContent = error.message; });
+        }
+      })();
+    </script>
+  </body>
+</html>

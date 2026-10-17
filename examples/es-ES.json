@@ -1,0 +1,164 @@
+{
+  "$comment": "Scripted Alexa+ conversation for alexa-local-inspector drive (--brain none). Phrases match alexa-addon/markets.json (es). {{prev.x}} / {{<id>.x}} read earlier structured results. Seed data: serve.mjs --stub --seed es-ES.",
+  "locale": "es-ES",
+  "turns": [
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault qué estoy registrando.",
+      "tool": "find_categories",
+      "args": {},
+      "expect": {
+        "contains": ["Sueño", "Di 'más'"],
+        "maxOptions": 5,
+        "hasNextPage": true,
+        "maxMs": 500
+      }
+    },
+    {
+      "say": "Más.",
+      "note": "Paginación: page_token de la respuesta anterior.",
+      "tool": "find_categories",
+      "args": {
+        "page_token": "{{prev.next_page_token}}"
+      },
+      "expect": {
+        "contains": ["Más categorías", "Medicación", "Lectura"],
+        "notContains": "Sueño",
+        "hasNextPage": false
+      }
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault qué registra Sueño.",
+      "tool": "describe_category",
+      "args": {
+        "category": "sueño"
+      },
+      "expect": {
+        "contains": ["horas", "obligatorio"]
+      }
+    },
+    {
+      "id": "sleep",
+      "say": "Alexa, pide a AOBRAIN Vault que anote siete horas y media de sueño.",
+      "tool": "log_entry",
+      "args": {
+        "category": "sueño",
+        "values": {
+          "horas": "7,5"
+        }
+      },
+      "expect": {
+        "contains": ["Sueño", "7,5", "¿Lo guardo?"]
+      }
+    },
+    {
+      "say": "Sí.",
+      "tool": "confirm_entry",
+      "args": {
+        "entry_id": "{{sleep.data.entry_id}}",
+        "category": "Sueño"
+      },
+      "expect": {
+        "contains": "Guardado en Sueño."
+      }
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault por mis registros de sueño de esta semana.",
+      "tool": "recent_entries",
+      "args": {
+        "category": "sueño",
+        "days": 7
+      },
+      "expect": {
+        "contains": "En Sueño",
+        "maxOptions": 5,
+        "hasNextPage": true
+      }
+    },
+    {
+      "say": "Más.",
+      "note": "La segunda página termina con la entrada de esta noche.",
+      "tool": "recent_entries",
+      "args": {
+        "category": "sueño",
+        "days": 7,
+        "page_token": "{{prev.next_page_token}}"
+      },
+      "expect": {
+        "contains": "horas 7,5",
+        "hasNextPage": false
+      }
+    },
+    {
+      "id": "water",
+      "say": "Alexa, pide a AOBRAIN Vault que anote dos vasos de agua.",
+      "tool": "log_entry",
+      "args": {
+        "category": "agua",
+        "values": {
+          "vasos": 2
+        }
+      },
+      "expect": {
+        "contains": ["Agua", "¿Lo guardo?"]
+      }
+    },
+    {
+      "say": "No.",
+      "note": "Ruta negativa: Alexa no llama a confirm_entry; la entrada preparada caduca.",
+      "tool": null,
+      "reply": "De acuerdo, no lo guardo.",
+      "expect": {}
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault por mis registros de agua de esta semana.",
+      "note": "Comprueba que la entrada rechazada no se guardó.",
+      "tool": "recent_entries",
+      "args": {
+        "category": "agua"
+      },
+      "expect": {
+        "contains": "No hay nada en Agua"
+      }
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault qué registra Correr.",
+      "note": "Categoría desconocida: el servidor ofrece como mucho tres alternativas.",
+      "tool": "describe_category",
+      "args": {
+        "category": "correr"
+      },
+      "expect": {
+        "contains": ["No encuentro", "¿Quizá"]
+      }
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault cuánto de mi plan he usado.",
+      "tool": "vault_usage",
+      "args": {},
+      "expect": {
+        "contains": ["plan PLUS", "7 de"]
+      }
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault qué puedes hacer.",
+      "note": "Lo responde Alexa+ con las descripciones de tools/list; sin llamada a herramienta.",
+      "tool": null,
+      "reply": "Puedo decirte qué registras y qué campos tiene cada categoría, anotar una entrada después de leértela, leerte tus entradas recientes de cinco en cinco y decirte cuánto de tu plan has usado.",
+      "expect": {
+        "toolsListed": 6
+      }
+    },
+    {
+      "say": "Alexa, pregunta a AOBRAIN Vault qué estoy registrando.",
+      "note": "Cuenta sin vincular (sin token): el servidor debe responder un 401 sin cabecera, y Alexa+ inicia la vinculación.",
+      "auth": "none",
+      "tool": "find_categories",
+      "args": {},
+      "reply": "Para usar AOBRAIN Vault, vincula tu cuenta en la app de Alexa.",
+      "expect": {
+        "status": 401,
+        "noWwwAuthenticate": true
+      }
+    }
+  ]
+}

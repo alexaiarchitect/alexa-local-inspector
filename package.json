@@ -1,0 +1,23 @@
+{
+  "name": "@aobrain/alexa-local-inspector",
+  "version": "0.1.0",
+  "description": "Local inspector for Alexa+ MCP add-ons: localhost proxy + browser UI (the shape of Amazon's @alexa-ai/addon-local-inspector), a simulated Alexa+ voice driver, account linking, and full flow recording.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "bin": {
+    "alexa-local-inspector": "bin/alexa-local-inspector.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "start": "node bin/alexa-local-inspector.mjs",
+    "format": "npx --yes prettier@3 --write .",
+    "format:check": "npx --yes prettier@3 --check ."
+  },
+  "optionalDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

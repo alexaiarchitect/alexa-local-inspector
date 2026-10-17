@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alexa+ local inspector</title>
+    <link rel="stylesheet" href="/app.css" />
+    <script src="/config.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Alexa+ local inspector</h1>
+      <div id="server" class="mono muted">connecting…</div>
+      <div class="actions">
+        <button id="btn-handshake" title="initialize → notifications/initialized → tools/list">Handshake</button>
+        <button id="btn-link" title="Authorization code + PKCE through the server's metadata">Link account</button>
+        <label>Script <input id="script" type="text" placeholder="examples/en-US.json" size="26" /></label>
+        <label>Brain
+          <select id="brain"><option value="none">scripted</option><option value="claude">claude</option></select>
+        </label>
+        <button id="btn-drive">Run conversation</button>
+        <button id="btn-visual" title="Screenshot ui:// widgets on both surfaces">Visual</button>
+        <button id="btn-verdict">Verdict</button>
+        <button id="btn-finish" title="Write summary + transcript and archive this run">Finish</button>
+      </div>
+    </header>
+    <nav id="tabs">
+      <button data-panel="session" class="active">Session</button>
+      <button data-panel="tools">Tools</button>
+      <button data-panel="conversation">Conversation</button>
+      <button data-panel="timeline">Timeline</button>
+      <button data-panel="verdict">Verdict</button>
+      <button data-panel="device">Device</button>
+    </nav>
+    <main>
+      <section id="panel-session" class="panel active"></section>
+      <section id="panel-tools" class="panel"></section>
+      <section id="panel-conversation" class="panel"></section>
+      <section id="panel-timeline" class="panel"></section>
+      <section id="panel-verdict" class="panel"></section>
+      <section id="panel-device" class="panel">
+        <div class="device-controls">
+          <label>Tool <select id="device-tool"></select></label>
+          <button data-surface="small" class="surface active">Small (10" and below)</button>
+          <button data-surface="large" class="surface">Large (11" and above)</button>
+        </div>
+        <div id="device-frame-wrap"><iframe id="device-frame" title="Device frame"></iframe></div>
+      </section>
+    </main>
+    <footer id="log" class="mono muted"></footer>
+    <script src="/app.js"></script>
+  </body>
+</html>

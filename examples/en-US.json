@@ -1,0 +1,110 @@
+{
+  "$comment": "Scripted Alexa+ conversation for alexa-local-inspector drive (--brain none). Phrases match alexa-addon/markets.json (us). {{prev.x}} / {{<id>.x}} read earlier structured results. Seed data: serve.mjs --stub --seed en-US.",
+  "locale": "en-US",
+  "turns": [
+    {
+      "say": "Alexa, ask AOBRAIN Vault what I'm tracking.",
+      "tool": "find_categories",
+      "args": {},
+      "expect": {
+        "contains": ["Sleep", "say 'more'"],
+        "maxOptions": 5,
+        "hasNextPage": true,
+        "maxMs": 500
+      }
+    },
+    {
+      "say": "More.",
+      "note": "Pagination: page_token from the previous answer.",
+      "tool": "find_categories",
+      "args": { "page_token": "{{prev.next_page_token}}" },
+      "expect": {
+        "contains": ["More categories", "Medication", "Reading"],
+        "notContains": "Sleep",
+        "hasNextPage": false
+      }
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault what Sleep records.",
+      "tool": "describe_category",
+      "args": { "category": "sleep" },
+      "expect": { "contains": ["hours", "required"] }
+    },
+    {
+      "id": "sleep",
+      "say": "Alexa, ask AOBRAIN Vault to log seven and a half hours of sleep.",
+      "tool": "log_entry",
+      "args": { "category": "sleep", "values": { "hours": "7.5" } },
+      "expect": { "contains": ["Sleep", "7.5", "Should I save it?"] }
+    },
+    {
+      "say": "Yes.",
+      "tool": "confirm_entry",
+      "args": { "entry_id": "{{sleep.data.entry_id}}", "category": "Sleep" },
+      "expect": { "contains": "Saved to Sleep." }
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault for my sleep entries from this week.",
+      "tool": "recent_entries",
+      "args": { "category": "sleep", "days": 7 },
+      "expect": { "contains": "In Sleep", "maxOptions": 5, "hasNextPage": true }
+    },
+    {
+      "say": "More.",
+      "note": "Second page ends with tonight's entry.",
+      "tool": "recent_entries",
+      "args": { "category": "sleep", "days": 7, "page_token": "{{prev.next_page_token}}" },
+      "expect": { "contains": "hours 7.5", "hasNextPage": false }
+    },
+    {
+      "id": "water",
+      "say": "Alexa, ask AOBRAIN Vault to log two glasses of water.",
+      "tool": "log_entry",
+      "args": { "category": "water", "values": { "glasses": 2 } },
+      "expect": { "contains": ["Water", "Should I save it?"] }
+    },
+    {
+      "say": "No.",
+      "note": "Negative path: Alexa does not call confirm_entry; the prepared entry expires.",
+      "tool": null,
+      "reply": "Okay, I won't save it.",
+      "expect": {}
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault for my water entries from this week.",
+      "note": "Proves the declined entry was not saved.",
+      "tool": "recent_entries",
+      "args": { "category": "water" },
+      "expect": { "contains": "Nothing in Water" }
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault what Running records.",
+      "note": "Unknown category: the server offers at most three spoken alternatives.",
+      "tool": "describe_category",
+      "args": { "category": "running" },
+      "expect": { "contains": ["couldn't find", "Did you mean"] }
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault how much of my plan I've used.",
+      "tool": "vault_usage",
+      "args": {},
+      "expect": { "contains": ["PLUS plan", "7 of"] }
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault what can you do?",
+      "note": "Answered by Alexa+ from the tools/list descriptions; no tool call.",
+      "tool": null,
+      "reply": "I can tell you what you track and what each category records, log an entry after reading it back to you, read your recent entries five at a time, and tell you how much of your plan you've used.",
+      "expect": { "toolsListed": 6 }
+    },
+    {
+      "say": "Alexa, ask AOBRAIN Vault what I'm tracking.",
+      "note": "Account not linked (no token): the server must answer a bare 401, which makes Alexa+ start account linking.",
+      "auth": "none",
+      "tool": "find_categories",
+      "args": {},
+      "reply": "To use AOBRAIN Vault, link your account in the Alexa app.",
+      "expect": { "status": 401, "noWwwAuthenticate": true }
+    }
+  ]
+}
